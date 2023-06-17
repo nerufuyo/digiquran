@@ -80,6 +80,31 @@ class TinySkeleton extends StatelessWidget {
   }
 }
 
+class ImageSkeleton extends StatelessWidget {
+  const ImageSkeleton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: MediaQuery.of(context).size.width,
+      height: 200,
+      decoration: BoxDecoration(
+        color: secondaryColor.withOpacity(0.25),
+        borderRadius: const BorderRadius.all(Radius.circular(10)),
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: Container(
+        width: MediaQuery.of(context).size.width,
+        height: 10,
+        decoration: BoxDecoration(
+          color: Colors.grey[300],
+          borderRadius: const BorderRadius.all(Radius.circular(10)),
+        ),
+      ),
+    );
+  }
+}
+
 class ClockSkeleton extends StatelessWidget {
   const ClockSkeleton({super.key});
 

@@ -80,7 +80,13 @@ class _QuranPageState extends State<QuranPage> with TickerProviderStateMixin {
                     centerTitle: true,
                     actions: [
                       IconButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Coming Soon'),
+                            ),
+                          );
+                        },
                         icon: const Icon(
                           Bootstrap.search,
                           color: tertiaryColor,

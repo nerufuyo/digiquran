@@ -1,10 +1,12 @@
 // ignore_for_file: avoid_print
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:digiquran/common/color.dart';
 import 'package:digiquran/common/font.dart';
 import 'package:digiquran/common/gap.dart';
 import 'package:digiquran/common/skeleton.dart';
 import 'package:digiquran/common/static.dart';
 import 'package:digiquran/data/controller/geolocator.dart';
+import 'package:digiquran/data/repository/repostiory.dart';
 import 'package:digiquran/presentation/widget/star_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -154,13 +156,13 @@ class _HomeScreenState extends State<HomeScreen> {
                   skeleton: const GridSkeleton(),
                   child: SizedBox(
                     width: double.infinity,
-                    height: 80,
+                    height: 86,
                     child: GridView.builder(
                       gridDelegate:
                           const SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 5,
                         crossAxisSpacing: 4,
-                        mainAxisExtent: 80,
+                        mainAxisExtent: 86,
                       ),
                       padding: EdgeInsets.zero,
                       shrinkWrap: true,
@@ -170,6 +172,12 @@ class _HomeScreenState extends State<HomeScreen> {
                           onTap: () {
                             if (index == 0) {
                               Navigator.pushNamed(context, featuresNav[0]);
+                            } else if (index == 1) {
+                              Navigator.pushNamed(context, featuresNav[1]);
+                            } else if (index == 2) {
+                              Navigator.pushNamed(context, featuresNav[2]);
+                            } else if (index == 4) {
+                              Navigator.pushNamed(context, featuresNav[4]);
                             } else {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
@@ -194,10 +202,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ),
                               ),
                               const VerticalGap5(),
-                              Text(
-                                features[index],
-                                style: firaSansS3.copyWith(
-                                  color: tertiaryColor,
+                              Expanded(
+                                child: Text(
+                                  features[index],
+                                  style: firaSansS3.copyWith(
+                                    color: tertiaryColor,
+                                  ),
+                                  textAlign: TextAlign.center,
                                 ),
                               ),
                             ],
@@ -209,44 +220,130 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 const VerticalGap15(),
                 Text(
-                  'News & Updates',
+                  'Daily Reminder',
                   style: firaSansH2,
                 ),
                 const VerticalGap5(),
-                // SizedBox(
-                //   width: double.infinity,
-                //   height: MediaQuery.of(context).size.height / 4,
-                //   child: FutureBuilder(
-                //     future: Repository().getVideosList(),
-                //     builder: (context, snapshot) {
-                //       if (snapshot.hasData) {
-                //         return ListView.separated(
-                //           scrollDirection: Axis.horizontal,
-                //           separatorBuilder: (context, index) =>
-                //               const HorizontalGap10(),
-                //           itemCount: snapshot.data!.length,
-                //           itemBuilder: (context, index) {
-                //             final data = snapshot.data![index];
-                //             return Text(data.nextPageToken.toString());
-                //           },
-                //         );
-                //       } else if (snapshot.hasError) {
-                //         return Center(
-                //           child: Text(
-                //             snapshot.error.toString(),
-                //             style: firaSansS3.copyWith(
-                //               color: tertiaryColor,
-                //             ),
-                //           ),
-                //         );
-                //       } else {
-                //         return const Center(
-                //           child: CircularProgressIndicator(),
-                //         );
-                //       }
-                //     },
-                //   ),
-                // )
+                Skeleton(
+                  isLoading: isLoading,
+                  duration: const Duration(seconds: 2),
+                  themeMode: ThemeMode.light,
+                  shimmerGradient: LinearGradient(
+                    colors: [
+                      tertiaryColor.withOpacity(.25),
+                      tertiaryColor.withOpacity(.5),
+                      tertiaryColor.withOpacity(.25),
+                    ],
+                    begin: const Alignment(-1.0, -0.5),
+                    end: const Alignment(1.0, 0.5),
+                    stops: const [0.0, 0.5, 1.0],
+                    tileMode: TileMode.repeated,
+                  ),
+                  skeleton: const ImageSkeleton(),
+                  child: FutureBuilder(
+                    future: Repository().getReminderList(),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        return Expanded(
+                          flex: 0,
+                          child: CarouselSlider.builder(
+                            options: CarouselOptions(
+                              autoPlay: true,
+                              autoPlayInterval: const Duration(seconds: 15),
+                              autoPlayAnimationDuration: const Duration(
+                                milliseconds: 500,
+                              ),
+                              autoPlayCurve: Curves.easeIn,
+                              aspectRatio: 16 / 9,
+                              pauseAutoPlayOnTouch: true,
+                              enlargeCenterPage: false,
+                              viewportFraction: 1,
+                            ),
+                            itemCount: snapshot.data!.length,
+                            itemBuilder: (context, index, realIndex) {
+                              final data = snapshot.data![index];
+                              return Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 2),
+                                child: Stack(
+                                  children: [
+                                    Container(
+                                      width: double.infinity,
+                                      height: double.infinity,
+                                      decoration: BoxDecoration(
+                                        color: primaryColor,
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                      padding: const EdgeInsets.all(16),
+                                      child: Container(
+                                        width: double.infinity,
+                                        decoration: const BoxDecoration(
+                                          color: secondaryColor,
+                                          borderRadius: BorderRadius.only(
+                                            topLeft: Radius.circular(10),
+                                            bottomRight: Radius.circular(10),
+                                          ),
+                                        ),
+                                        padding: const EdgeInsets.all(16),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Text(
+                                              '"${data.text}"',
+                                              style: firaSansS2.copyWith(
+                                                color: tertiaryColor,
+                                              ),
+                                            ),
+                                            const VerticalGap5(),
+                                            Text(
+                                              data.reference,
+                                              style: firaSansH4.copyWith(
+                                                color: tertiaryColor,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                    const Positioned(
+                                      bottom: 24,
+                                      right: 24,
+                                      child: Icon(
+                                        Bootstrap.moon_stars_fill,
+                                        color: primaryColor,
+                                        size: 24,
+                                      ),
+                                    ),
+                                    const Positioned(
+                                      top: 0,
+                                      left: 0,
+                                      child: Icon(
+                                        Bootstrap.sun_fill,
+                                        color: primaryColor,
+                                        size: 48,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                          ),
+                        );
+                      } else if (snapshot.hasError) {
+                        return const Text('Error');
+                      } else {
+                        return const Center(
+                          child: CircularProgressIndicator(
+                            color: primaryColor,
+                          ),
+                        );
+                      }
+                    },
+                  ),
+                ),
               ],
             ),
           ),
@@ -461,7 +558,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void loadDone() {
-    Future.delayed(const Duration(seconds: 5), () {
+    Future.delayed(const Duration(seconds: 4), () {
       setState(() {
         isLoading = false;
       });
