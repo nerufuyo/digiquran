@@ -1,16 +1,14 @@
-# digiquran
+# DigiQuran
+DigiQuran is a user-friendly Islamic app that offers a range of features to enhance your spiritual journey. Read Quran allows easy navigation and recitation options, while Shalah Time provides accurate prayer times. Daily Quotes offer insightful teachings, Qiblah Direction points to the Kaaba, and Daily Dua provides blessings and guidance. The app also includes an Islamic Video Player for educational and motivational videos. Experience spirituality and technology in perfect harmony with DigiQuran, your ultimate companion on the path to enlightenment.
 
-A new Flutter project.
+## Features
+- Read Quran
+- Shalah Time
+- Daily Quotes
+- Qiblah Direction
+- Daily Dua
+- Islamic Video Player
 
-## Getting Started
+## Screenshots
+<img src='screenshot/banner.jpg'>
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.

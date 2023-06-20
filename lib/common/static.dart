@@ -4,9 +4,9 @@ import 'package:digiquran/presentation/screen/qibla_page.dart';
 import 'package:digiquran/presentation/screen/quran_page.dart';
 import 'package:icons_plus/icons_plus.dart';
 
-const String apiKey = 'AIzaSyDDBvG8MdM0pEzMGEYsJeevnYwY1iQS_AA';
-const String playlistId = 'UUZHbLWGrq43F0-5Ef37CpWQ';
-const String nextPageToken = 'EAAaBlBUOkNBVQ';
+const channelId = 'UUZHbLWGrq43F0-5Ef37CpWQ';
+const apiKey = 'AIzaSyDDBvG8MdM0pEzMGEYsJeevnYwY1iQS_AA';
+
 final List sholatTime = ['Shubuh', 'Dzuhr', 'Asr', 'Maghrib', 'Isha'];
 final List sholatTimeIcon = [
   Bootstrap.sunrise_fill,

@@ -45,6 +45,9 @@ dependencies:
   skeletons: ^0.0.3
   carousel_slider: ^4.2.1
   flutter_qiblah: ^2.2.0
+  lottie: ^2.4.0
+  youtube_player_flutter: ^8.1.2
+  flutter_inappwebview: ^5.7.2+3
 
 dev_dependencies:
   flutter_test:
@@ -69,6 +72,7 @@ flutter:
   uses-material-design: true
   assets:
     - lib/assets/qibla.png
+    - lib/assets/book.json
 
   # To add assets to your application, add an assets section, like this:
   # assets:

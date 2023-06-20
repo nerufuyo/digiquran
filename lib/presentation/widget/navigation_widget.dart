@@ -1,5 +1,6 @@
 import 'package:digiquran/common/color.dart';
-import 'package:digiquran/presentation/screen/home_screen.dart';
+import 'package:digiquran/presentation/screen/home_page.dart';
+import 'package:digiquran/presentation/screen/video_page.dart';
 import 'package:flutter/material.dart';
 import 'package:icons_plus/icons_plus.dart';
 
@@ -14,10 +15,10 @@ class NavigationWidget extends StatefulWidget {
 class _NavigationWidgetState extends State<NavigationWidget> {
   int _selectedIndex = 0;
   final List _widgetOptions = [
-    const HomeScreen(),
-    const Center(child: Text('Quran')),
-    const Center(child: Text('Hadith')),
-    const Center(child: Text('Profile')),
+    const HomePage(),
+    const Center(child: Text('Coming Soon!')),
+    const VideoPage(),
+    const Center(child: Text('Coming Soon!')),
   ];
 
   void _onItemTapped(int index) {

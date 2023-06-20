@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:digiquran/common/color.dart';
 import 'package:digiquran/common/font.dart';
+import 'package:digiquran/common/gap.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_qiblah/flutter_qiblah.dart';
 import 'package:geolocator/geolocator.dart';
@@ -70,71 +71,120 @@ class _QiblaPageState extends State<QiblaPage> {
         ),
         elevation: 0,
       ),
-      body: FutureBuilder(
-        future: deviceSupport,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(color: primaryColor),
-            );
-          } else if (snapshot.hasError) {
-            return const Center(
-              child: Text('Error'),
-            );
-          } else if (snapshot.data == false) {
-            return const Center(
-              child: Text('Device not supported'),
-            );
-          } else {
-            return Stack(
-              children: [
-                Container(
-                  width: 380,
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          FutureBuilder(
+            future: deviceSupport,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(
+                  child: CircularProgressIndicator(color: primaryColor),
+                );
+              } else if (snapshot.hasError) {
+                return const Center(
+                  child: Text('Error'),
+                );
+              } else if (snapshot.data == false) {
+                return const Center(
+                  child: Text('Device not supported'),
+                );
+              } else {
+                return Container(
+                  width: MediaQuery.of(context).size.width,
                   height: 380,
                   padding: const EdgeInsets.all(20),
-                  child: StreamBuilder(
-                    stream: stream,
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const CircularProgressIndicator(
-                            color: primaryColor);
-                      } else if (snapshot.data!.enabled == true) {
-                        switch (snapshot.data!.status) {
-                          case LocationPermission.always:
-                          case LocationPermission.whileInUse:
-                            return const QiblahCompassWidget();
+                  child: Stack(
+                    alignment: Alignment.topCenter,
+                    children: [
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width,
+                        height: MediaQuery.of(context).size.height,
+                        child: StreamBuilder(
+                          stream: stream,
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return const CircularProgressIndicator(
+                                color: primaryColor,
+                              );
+                            } else if (snapshot.data!.enabled == true) {
+                              switch (snapshot.data!.status) {
+                                case LocationPermission.always:
+                                case LocationPermission.whileInUse:
+                                  return const QiblahCompassWidget();
 
-                          case LocationPermission.denied:
-                            return const Text('Location service denied');
-                          case LocationPermission.deniedForever:
-                            return const Text(
-                              'Location service denied forever, we cannot request permission',
-                            );
-                          default:
-                            return const Text('Unknown Error');
-                        }
-                      } else {
-                        return const Center(
-                          child: Text('Location Service is disabled'),
-                        );
-                      }
-                    },
+                                case LocationPermission.denied:
+                                  return const Text('Location service denied');
+                                case LocationPermission.deniedForever:
+                                  return const Text(
+                                    'Location service denied forever, we cannot request permission',
+                                  );
+                                default:
+                                  return const Text('Unknown Error');
+                              }
+                            } else {
+                              return const Center(
+                                child: Text('Location Service is disabled'),
+                              );
+                            }
+                          },
+                        ),
+                      ),
+                      Positioned(
+                        top: 4,
+                        child: Text(
+                          'N',
+                          style: firaSansH2.copyWith(color: Colors.red),
+                        ),
+                      ),
+                      Positioned(
+                        top: MediaQuery.of(context).size.height / 5.75,
+                        right: 30,
+                        child: Text(
+                          'E',
+                          style: firaSansH2.copyWith(color: secondaryColor),
+                        ),
+                      ),
+                      Positioned(
+                        top: MediaQuery.of(context).size.height / 5.75,
+                        left: 28,
+                        child: Text(
+                          'W',
+                          style: firaSansH2.copyWith(color: secondaryColor),
+                        ),
+                      ),
+                      Positioned(
+                        bottom: 16,
+                        child: Text(
+                          'S',
+                          style: firaSansH2.copyWith(color: secondaryColor),
+                        ),
+                      ),
+                    ],
                   ),
+                );
+              }
+            },
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Column(
+              children: [
+                Text(
+                  'Qiblah Information',
+                  style: firaSansH2.copyWith(color: secondaryColor),
                 ),
-                Positioned(
-                  left: 0,
-                  child: Text(
-                    'N',
-                    style: firaSansH1.copyWith(
-                      color: secondaryColor,
-                      fontSize: 28,
-                    ),
-                  ),
-                )
+                const VerticalGap10(),
+                Text(
+                  'The Qiblah is the direction that Muslims face during their prayers, towards the Kaaba in Mecca, Saudi Arabia. It can be determined using tools such as Qiblah compasses, smartphone apps, online locators, or mobile applications that utilize GPS technology. The Qiblah direction varies depending on the geographic location, and it is essential for various acts of worship, not just prayer.',
+                  style: firaSansS2.copyWith(color: secondaryColor),
+                  textAlign: TextAlign.center,
+                ),
               ],
-            );
-          }
-        },
+            ),
+          ),
+        ],
       ),
     );
   }

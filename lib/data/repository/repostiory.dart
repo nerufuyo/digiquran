@@ -1,14 +1,21 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:digiquran/common/static.dart';
 import 'package:digiquran/data/model/asmaulhusna_model.dart';
 import 'package:digiquran/data/model/dua_model.dart';
+import 'package:digiquran/data/model/location_model.dart';
 import 'package:digiquran/data/model/reminder_model.dart';
+import 'package:digiquran/data/model/schedule_model.dart';
 import 'package:digiquran/data/model/surah_model.dart';
+import 'package:digiquran/data/model/video_list_model.dart';
 import 'package:http/http.dart' as http;
+import 'package:http/http.dart';
 
 class Repository {
   final quranBaseUrl = 'https://apimuslimify.vercel.app/api/v2';
-
+  final shalahBaseUrl = 'https://api.myquran.com/v1';
+  final videoBaseUrl = 'www.googleapis.com';
+ 
   Future<List<Surah>> getSurahList() async {
     final response = await http.get(Uri.parse('$quranBaseUrl/surah'));
 
@@ -49,7 +56,7 @@ class Repository {
       throw Exception('No Internet connection');
     }
   }
-  
+
   Future<List<Reminder>> getReminderList() async {
     final response = await http.get(Uri.parse('$quranBaseUrl/quotes'));
 
@@ -106,4 +113,104 @@ class Repository {
       throw Exception('No Internet connection');
     }
   }
+
+  Future<List<LocationModel>> postLocationList({required String city}) async {
+    final response =
+        await http.get(Uri.parse('$shalahBaseUrl/sholat/kota/cari/$city'));
+
+    try {
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final List<LocationModel> locationList = [];
+        for (var item in data['data']) {
+          locationList.add(LocationModel.fromJson(item));
+        }
+        return locationList;
+      } else {
+        throw Exception('Failed to load location list');
+      }
+    } on SocketException {
+      throw Exception('No Internet connection');
+    } catch (e) {
+      throw Exception(e);
+    }
+  }
+
+  Future<Schedule> getScheduleByCity({
+    required String id,
+    required int year,
+    required int month,
+    required int day,
+  }) async {
+    final response = await http
+        .get(Uri.parse('$shalahBaseUrl/sholat/jadwal/$id/$year/$month/$day'));
+    try {
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final schedule = Schedule.fromJson(data['data']);
+        return schedule;
+      } else {
+        throw Exception('Failed to load schedule');
+      }
+    } on SocketException {
+      throw Exception('No Internet connection');
+    }
+  }
+
+  Future<List<VideoList>> getVideoList() async {
+    Map<String, String> parameter = {
+      'part': 'snippet',
+      'playlistId': channelId,
+      'maxResults': '50',
+      'key': apiKey,
+    };
+    Map<String, String> header = {
+      HttpHeaders.contentTypeHeader: 'application/json',
+    };
+
+    Uri uri = Uri.https(videoBaseUrl, '/youtube/v3/playlistItems', parameter);
+
+    try {
+      Response response = await get(uri, headers: header);
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final List<dynamic> itemList = data['items'];
+        final List<VideoList> videoList =
+            itemList.map((item) => VideoList.fromJson(item)).toList();
+        return videoList;
+      } else {
+        throw Exception('Failed to load video list');
+      }
+    } on SocketException {
+      throw Exception('No Internet connection');
+    }
+  }
+
+  Future<VideoList> getVideoById({required String id}) async {
+    Map<String, String> parameter = {
+      'part': 'snippet',
+      'id': id,
+      'key': apiKey,
+    };
+    Map<String, String> header = {
+      HttpHeaders.contentTypeHeader: 'application/json',
+    };
+
+    Uri uri = Uri.https(videoBaseUrl, '/youtube/v3/videos', parameter);
+
+    try {
+      Response response = await get(uri, headers: header);
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final List<dynamic> itemList = data['items'];
+        final video = VideoList.fromJson(itemList[0]);
+        return video;
+      } else {
+        throw Exception('Failed to load video');
+      }
+    } on SocketException {
+      throw Exception('No Internet connection');
+    }
+  }
+
 }

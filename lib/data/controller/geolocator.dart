@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 
@@ -32,7 +34,7 @@ Future<String> getAddress(double latitude, double longitude) async {
         await placemarkFromCoordinates(latitude, longitude);
     if (placemarks.isNotEmpty) {
       Placemark placemark = placemarks[0];
-      return '${placemark.locality}, ${placemark.country}';
+      return '${placemark.subAdministrativeArea}, ${placemark.country}';
     }
   } catch (e) {
     print('Error: $e');

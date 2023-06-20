@@ -1,4 +1,3 @@
-// ignore_for_file: avoid_print
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:digiquran/common/color.dart';
 import 'package:digiquran/common/font.dart';
@@ -6,6 +5,8 @@ import 'package:digiquran/common/gap.dart';
 import 'package:digiquran/common/skeleton.dart';
 import 'package:digiquran/common/static.dart';
 import 'package:digiquran/data/controller/geolocator.dart';
+import 'package:digiquran/data/model/location_model.dart';
+import 'package:digiquran/data/model/schedule_model.dart';
 import 'package:digiquran/data/repository/repostiory.dart';
 import 'package:digiquran/presentation/widget/star_widget.dart';
 import 'package:flutter/material.dart';
@@ -16,26 +17,24 @@ import 'package:icons_plus/icons_plus.dart';
 import 'package:intl/intl.dart';
 import 'package:skeletons/skeletons.dart';
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+class HomePage extends StatefulWidget {
+  const HomePage({super.key});
   static const routeName = '/home-screen';
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  State<HomePage> createState() => _HomePageState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomePageState extends State<HomePage> {
   bool isLoading = true;
-  final String locale = 'en';
-  String address = '';
+  String addressVar = '';
+  String timeId = '';
+  List shalahData = [];
   HijriCalendar hijriToday = HijriCalendar.now();
-  late Stream<DateTime> clockStream;
+  Stream<DateTime>? clockStream;
 
   @override
   void initState() {
-    getHijriDate();
-    getLocation();
-    getTime();
     loadDone();
     super.initState();
   }
@@ -244,93 +243,90 @@ class _HomeScreenState extends State<HomeScreen> {
                     future: Repository().getReminderList(),
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
-                        return Expanded(
-                          flex: 0,
-                          child: CarouselSlider.builder(
-                            options: CarouselOptions(
-                              autoPlay: true,
-                              autoPlayInterval: const Duration(seconds: 15),
-                              autoPlayAnimationDuration: const Duration(
-                                milliseconds: 500,
-                              ),
-                              autoPlayCurve: Curves.easeIn,
-                              aspectRatio: 16 / 9,
-                              pauseAutoPlayOnTouch: true,
-                              enlargeCenterPage: false,
-                              viewportFraction: 1,
+                        return CarouselSlider.builder(
+                          options: CarouselOptions(
+                            autoPlay: true,
+                            autoPlayInterval: const Duration(seconds: 15),
+                            autoPlayAnimationDuration: const Duration(
+                              milliseconds: 500,
                             ),
-                            itemCount: snapshot.data!.length,
-                            itemBuilder: (context, index, realIndex) {
-                              final data = snapshot.data![index];
-                              return Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 2),
-                                child: Stack(
-                                  children: [
-                                    Container(
+                            autoPlayCurve: Curves.easeIn,
+                            aspectRatio: 16 / 9,
+                            pauseAutoPlayOnTouch: true,
+                            enlargeCenterPage: false,
+                            viewportFraction: 1,
+                          ),
+                          itemCount: snapshot.data!.length,
+                          itemBuilder: (context, index, realIndex) {
+                            final data = snapshot.data![index];
+                            return Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 2),
+                              child: Stack(
+                                children: [
+                                  Container(
+                                    width: double.infinity,
+                                    height: double.infinity,
+                                    decoration: BoxDecoration(
+                                      color: primaryColor,
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    padding: const EdgeInsets.all(16),
+                                    child: Container(
                                       width: double.infinity,
-                                      height: double.infinity,
-                                      decoration: BoxDecoration(
-                                        color: primaryColor,
-                                        borderRadius: BorderRadius.circular(10),
+                                      decoration: const BoxDecoration(
+                                        color: secondaryColor,
+                                        borderRadius: BorderRadius.only(
+                                          topLeft: Radius.circular(10),
+                                          bottomRight: Radius.circular(10),
+                                        ),
                                       ),
                                       padding: const EdgeInsets.all(16),
-                                      child: Container(
-                                        width: double.infinity,
-                                        decoration: const BoxDecoration(
-                                          color: secondaryColor,
-                                          borderRadius: BorderRadius.only(
-                                            topLeft: Radius.circular(10),
-                                            bottomRight: Radius.circular(10),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            '"${data.text}"',
+                                            style: firaSansS2.copyWith(
+                                              color: tertiaryColor,
+                                            ),
                                           ),
-                                        ),
-                                        padding: const EdgeInsets.all(16),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            Text(
-                                              '"${data.text}"',
-                                              style: firaSansS2.copyWith(
-                                                color: tertiaryColor,
-                                              ),
+                                          const VerticalGap5(),
+                                          Text(
+                                            data.reference,
+                                            style: firaSansH4.copyWith(
+                                              color: tertiaryColor,
                                             ),
-                                            const VerticalGap5(),
-                                            Text(
-                                              data.reference,
-                                              style: firaSansH4.copyWith(
-                                                color: tertiaryColor,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
+                                          ),
+                                        ],
                                       ),
                                     ),
-                                    const Positioned(
-                                      bottom: 24,
-                                      right: 24,
-                                      child: Icon(
-                                        Bootstrap.moon_stars_fill,
-                                        color: primaryColor,
-                                        size: 24,
-                                      ),
+                                  ),
+                                  const Positioned(
+                                    bottom: 24,
+                                    right: 24,
+                                    child: Icon(
+                                      Bootstrap.moon_stars_fill,
+                                      color: primaryColor,
+                                      size: 24,
                                     ),
-                                    const Positioned(
-                                      top: 0,
-                                      left: 0,
-                                      child: Icon(
-                                        Bootstrap.sun_fill,
-                                        color: primaryColor,
-                                        size: 48,
-                                      ),
+                                  ),
+                                  const Positioned(
+                                    top: 0,
+                                    left: 0,
+                                    child: Icon(
+                                      Bootstrap.sun_fill,
+                                      color: primaryColor,
+                                      size: 48,
                                     ),
-                                  ],
-                                ),
-                              );
-                            },
-                          ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
                         );
                       } else if (snapshot.hasError) {
                         return const Text('Error');
@@ -392,7 +388,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                     Text(
-                      address,
+                      addressVar,
                       style: firaSansS2.copyWith(
                         color: secondaryColor,
                       ),
@@ -480,7 +476,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   skeleton: const TinySkeleton(),
                   child: Text(
-                    '2 Hour remaining until Maghrib',
+                    getRemainingTime(),
                     style: firaSansS2.copyWith(
                       color: secondaryColor,
                     ),
@@ -515,7 +511,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       padding: EdgeInsets.zero,
                       shrinkWrap: true,
-                      itemCount: 5,
+                      itemCount: shalahData.length,
                       itemBuilder: (context, index) {
                         return Container(
                           decoration: BoxDecoration(
@@ -537,7 +533,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 color: secondaryColor,
                               ),
                               Text(
-                                'Subuh',
+                                shalahData[index],
                                 style: firaSansS2.copyWith(
                                   color: secondaryColor,
                                 ),
@@ -557,22 +553,86 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  void loadDone() {
-    Future.delayed(const Duration(seconds: 4), () {
+  void loadDone() async {
+    getLocation();
+    getHijriDate();
+    getTime();
+    getShalahSchedule();
+    Future.delayed(const Duration(seconds: 3), () {
       setState(() {
         isLoading = false;
       });
     });
   }
 
-  void getHijriDate() {
-    setState(() {
-      hijriToday = HijriCalendar.now();
-      HijriCalendar.setLocal(locale);
-    });
+  String getRemainingTime() {
+    if (shalahData.isEmpty) {
+      return '';
+    }
+
+    DateTime now = DateTime.now();
+    String remainingTime = '';
+
+    List<String> prayerNames = ['Subuh', 'Dzuhur', 'Ashar', 'Maghrib', 'Isha'];
+
+    for (int i = 0; i < shalahData.length; i++) {
+      DateTime prayerTime = DateTime.parse(
+        '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')} ${shalahData[i]}',
+      );
+      Duration remainingDuration = prayerTime.difference(now);
+
+      if (remainingDuration.isNegative) {
+        continue;
+      }
+
+      int remainingHours = remainingDuration.inHours;
+      int remainingMinutes = remainingDuration.inMinutes.remainder(60);
+      remainingTime +=
+          '$remainingHours hours $remainingMinutes minutes remaining until ${prayerNames[i]}';
+
+      break;
+    }
+
+    return remainingTime.trim();
   }
 
-  void getLocation() async {
+  Future getShalahSchedule() async {
+    try {
+      String address = await getLocation();
+      List<String> parts = address.split(',');
+      String cityName = parts[0].split(' ')[1];
+      List<LocationModel> location =
+          await Repository().postLocationList(city: cityName);
+      String locationId = location[0].id;
+
+      Schedule schedule = await Repository().getScheduleByCity(
+        id: locationId,
+        year: DateTime.now().year,
+        month: DateTime.now().month,
+        day: DateTime.now().day,
+      );
+
+      List<String> shalahSchedule = [];
+      shalahSchedule.add(schedule.jadwal?.subuh ?? '00:00');
+      shalahSchedule.add(schedule.jadwal?.dzuhur ?? '00:00');
+      shalahSchedule.add(schedule.jadwal?.ashar ?? '00:00');
+      shalahSchedule.add(schedule.jadwal?.maghrib ?? '00:00');
+      shalahSchedule.add(schedule.jadwal?.isya ?? '00:00');
+      setState(() {
+        shalahData = shalahSchedule;
+      });
+      return shalahSchedule;
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error: $e'),
+        ),
+      );
+      return [];
+    }
+  }
+
+  Future getLocation() async {
     double latitude = 0;
     double longitude = 0;
     try {
@@ -583,11 +643,24 @@ class _HomeScreenState extends State<HomeScreen> {
       });
       String address = await getAddress(latitude, longitude);
       setState(() {
-        this.address = address;
+        addressVar = address;
       });
+      return address;
     } catch (e) {
-      print('Error: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error: $e'),
+        ),
+      );
     }
+  }
+
+  void getHijriDate() {
+    const String locale = 'en';
+    setState(() {
+      hijriToday = HijriCalendar.now();
+      HijriCalendar.setLocal(locale);
+    });
   }
 
   void getTime() {
